@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Garbled Circuit</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    </head>
+    <body>
+        <h1>Garbled Circuit</h1>
+        <hr>
+        <br>
+        <div>
+            <label>Enter a number</label>
+	        <input type='number' pattern='\d*' step='1' id='moolaa'/>				
+	        <input class='btn btn-primary' type='button' value='Send' onclick='sendNumber()' />
+        </div>
+        <br>
+	    <div>
+            <label>Response</label>
+            <textarea type='text' id='response' style='background-color:#000000; color:white' cols='50' readonly></textarea> 
+        </div>
+        <script>
+            function sendNumber() {
+                var number = document.getElementById('moolaa').value;
+                $.ajax({
+                    type: 'POST',
+                    url: '/process/',
+                    data: {
+                        'number': number,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function (data) {
+                        document.getElementById('response').value = data.response;
+                    }
+                });
+            }
+        </script>
+    </body>
+</html>
