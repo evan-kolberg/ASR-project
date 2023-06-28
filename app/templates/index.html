@@ -56,14 +56,23 @@
                 success: function (data) {
                     var newRow = $('<tr></tr>');
                     var numberCell = $('<td></td>').text(number);
-                    var hashCell = $('<td></td>').css({'font-size': 'smaller', 'word-wrap': 'break-word', 'max-width': '92vw'}).text(data.response);
+                    var hashCell = $('<td></td>').css({
+                        'font-size': 'smaller',
+                        'word-wrap': 'break-word',
+                        'max-width': '92vw'
+                    }).text(data.response);
                     newRow.append(numberCell);
                     newRow.append(hashCell);
 
-                    $('#hashTable tbody').prepend(newRow);
-                    $('#hashTable tbody tr:last').remove();
+                    var tableBody = $('#hashTable tbody');
+                    var rowCount = tableBody.children().length;
 
-                    document.getElementById('response').value = data.response;
+                    if (rowCount >= 10) {
+                        tableBody.find('tr:last').remove();
+                    }
+
+                    tableBody.prepend(newRow);
+                    $('#response').val(data.response);
                 }
             });
         }
