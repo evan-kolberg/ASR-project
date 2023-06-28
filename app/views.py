@@ -8,7 +8,7 @@ public_key, private_key = newkeys(2048)
 
 
 def handle(request):
-    return render(request, 'index.html', {'table_data': data.objects.all()})
+    return render(request, 'index.html', {'table_data': data.objects.order_by('-id')[:10]})
 
 
 def process_number(request):
@@ -26,3 +26,4 @@ def process_number(request):
 
         # Sends encrypted number as response (raw bytes)
         return JsonResponse({'response': encrypted_number.hex()})
+

@@ -32,10 +32,10 @@
                 </tr>
             </thead>
             <tbody>
-                {% for i in table_data reversed %}
+                {% for i in table_data %}
                     <tr>
                         <td>{{ i.number }}</td>
-                        <td style='font-size: smaller; word-wrap: break-word; max-width: 90vw'>{{ i.encrypted_hash }}</td>
+                        <td style='font-size: smaller; word-wrap: break-word; max-width: 92vw'>{{ i.encrypted_hash }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -44,6 +44,7 @@
     <script>
         function sendNumber() {
             var number = document.getElementById('moolaa').value;
+            document.getElementById('moolaa').value = '';
             $.ajax({
                 type: 'POST',
                 url: '/process/',
@@ -54,10 +55,13 @@
                 success: function (data) {
                     var newRow = $('<tr></tr>');
                     var numberCell = $('<td></td>').text(number);
-                    var hashCell = $('<td></td>').css({'font-size': 'smaller', 'word-wrap': 'break-word', 'max-width': '90vw'}).text(data.response);
+                    var hashCell = $('<td></td>').css({'font-size': 'smaller', 'word-wrap': 'break-word', 'max-width': '92vw'}).text(data.response);
                     newRow.append(numberCell);
                     newRow.append(hashCell);
-                    $('#hashTable tbody').prepend(newRow);  // Prepend the new row to the top of the table
+
+                    $('#hashTable tbody').prepend(newRow);
+                    $('#hashTable tbody tr:last').remove();
+
                     document.getElementById('response').value = data.response;
                 }
             });
@@ -66,3 +70,4 @@
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script>
 </body>
 </html>
+
