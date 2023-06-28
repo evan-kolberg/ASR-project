@@ -1,41 +1,68 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Garbled Circuit</title>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    </head>
-    <body>
-        <h1>Garbled Circuit</h1>
-        <hr>
-        <br>
-        <div>
-            <label>Enter a number</label>
-	        <input type='number' pattern='\d*' step='1' id='moolaa'/>				
-	        <input class='btn btn-primary' type='button' value='Send' onclick='sendNumber()' />
-        </div>
-        <br>
-	    <div>
-            <label>Response</label>
-            <textarea type='text' id='response' style='background-color:#000000; color:white' cols='50' readonly></textarea> 
-        </div>
-        <script>
-            function sendNumber() {
-                var number = document.getElementById('moolaa').value;
-                $.ajax({
-                    type: 'POST',
-                    url: '/process/',
-                    data: {
-                        'number': number,
-                        'csrfmiddlewaretoken': '{{ csrf_token }}'
-                    },
-                    success: function (data) {
-                        document.getElementById('response').value = data.response;
-                    }
-                });
-            }
-        </script>
-    </body>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta http-equiv='X-UA-Compatible' content='ie=edge'>
+    <title>Garbled Circuit</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}" />
+</head>
+<body>
+    <h1>Garbled Circuit</h1>
+    <hr>
+    <br>
+    <div>
+        <label>Enter a number</label>
+        <input type='number' pattern='\d*' step='1' id='moolaa'/>				
+        <input type='button' value='Send' onclick='sendNumber()' />
+    </div>
+    <br>
+    <div>
+        <label>Response</label>
+        <textarea type='text' id='response' style='background-color:white; color:black' rows='5' cols='105' readonly></textarea> 
+    </div>
+    <br>
+    <div>
+        <table id='hashTable' border='0'>
+            <thead>
+                <tr>
+                    <th>Number</th>
+                    <th>Encrypted Hash</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in table_data reversed %}
+                    <tr>
+                        <td>{{ i.number }}</td>
+                        <td style='font-size: smaller; word-wrap: break-word; max-width: 90vw'>{{ i.encrypted_hash }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script>
+        function sendNumber() {
+            var number = document.getElementById('moolaa').value;
+            $.ajax({
+                type: 'POST',
+                url: '/process/',
+                data: {
+                    'number': number,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    var newRow = $('<tr></tr>');
+                    var numberCell = $('<td></td>').text(number);
+                    var hashCell = $('<td></td>').css({'font-size': 'smaller', 'word-wrap': 'break-word', 'max-width': '90vw'}).text(data.response);
+                    newRow.append(numberCell);
+                    newRow.append(hashCell);
+                    $('#hashTable tbody').prepend(newRow);  // Prepend the new row to the top of the table
+                    document.getElementById('response').value = data.response;
+                }
+            });
+        }
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script>
+</body>
 </html>
