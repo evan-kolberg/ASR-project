@@ -54,25 +54,26 @@
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },
                 success: function (data) {
+                    $('#response').val(data.hash);
+
                     var newRow = $('<tr></tr>');
                     var numberCell = $('<td></td>').text(number);
                     var hashCell = $('<td></td>').css({
                         'font-size': 'smaller',
                         'word-wrap': 'break-word',
                         'max-width': '92vw'
-                    }).text(data.response);
+                    }).text(data.hash);
                     newRow.append(numberCell);
                     newRow.append(hashCell);
 
                     var tableBody = $('#hashTable tbody');
                     var rowCount = tableBody.children().length;
 
-                    if (rowCount >= 10) {
+                    if (rowCount >= 20) {
                         tableBody.find('tr:last').remove();
                     }
 
                     tableBody.prepend(newRow);
-                    $('#response').val(data.response);
                 }
             });
         }
