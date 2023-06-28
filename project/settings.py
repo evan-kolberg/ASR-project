@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-*&5b7mly=7qorkk=8#rdus2##bro_=we8(%6rcixi^d%zf_4%=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.1.200', '192.168.1.250', 'django.loophole.site']
 
 
 # Application definition

@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from rsa import newkeys, encrypt
+from django.views.decorators.csrf import csrf_exempt
 from .models import data
 
 # Generate RSA key pair (outside of the function)
@@ -11,6 +12,7 @@ def handle(request):
     return render(request, 'index.html', {'table_data': data.objects.order_by('-id')[:10]})
 
 
+@csrf_exempt
 def process_number(request):
     if request.method == 'POST':
         number = request.POST.get('number')
