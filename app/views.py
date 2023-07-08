@@ -1,29 +1,25 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from rsa import newkeys, encrypt
 from django.views.decorators.csrf import csrf_exempt
 from .models import data
+from django.utils import timezone
 
 
-# gens RSA key pair (outside of the function)
-public_key, private_key = newkeys(2048)
-
-
+# gives html file and most recent 20 items in db
 def handle(request):
     return render(request, 'index.html', {'table_data': data.objects.order_by('-id')[:20]})
 
 
 @csrf_exempt
-def process_number(request):
+def process_hash(request):
     if request.method == 'POST':
-        number = request.POST.get('number')
+        hash = request.POST.get('hash')
+        number = timezone.now
 
-        # encrypt number using RSA public key
-        encrypted_number = encrypt(number.encode(), public_key)
+        # Store the encrypted hash in the database
+        data.objects.create(number=number, encrypted_hash=hash)
 
-        # stores encrypted hash in the database
-        data.objects.create(number=number, encrypted_hash=encrypted_number.hex())
+        return JsonResponse({'success': True})
 
-        # sends encrypted number as response (raw bytes)
-        return JsonResponse({'hash': encrypted_number.hex()})
+    return JsonResponse({'success': False})  # Add a response for non-POST requests
 

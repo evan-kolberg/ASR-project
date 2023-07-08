@@ -27,14 +27,12 @@
         <table id='hashTable' border='0'>
             <thead>
                 <tr>
-                    <th>Number</th>
                     <th>Encrypted Hash</th>
                 </tr>
             </thead>
             <tbody>
                 {% for i in table_data %}
                     <tr>
-                        <td>{{ i.number }}</td>
                         <td style='font-size: smaller; word-wrap: break-word; max-width: 92vw'>{{ i.encrypted_hash }}</td>
                     </tr>
                 {% endfor %}
@@ -42,28 +40,45 @@
         </table>
     </div>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.1.0/jsencrypt.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js'></script>
     <script>
         function sendNumber() {
             var number = document.getElementById('moolaa').value;
             document.getElementById('moolaa').value = '';
+
+            // Create a new JSEncrypt instance
+            var encrypt = new JSEncrypt();
+
+            // Generate a new RSA key pair
+            var rsaKeyPair = encrypt.getKey();
+
+            // Set the public key for encryption
+            var publicKey = rsaKeyPair.getPublicKey();
+            encrypt.setPublicKey(publicKey);
+
+            // Encrypt the number using the public key
+            var encrypted = encrypt.encrypt(number);
+
+            // Convert the encrypted value to a hex string for transmission
+            var encryptedHex = CryptoJS.enc.Hex.stringify(CryptoJS.enc.Utf8.parse(encrypted));
+
             $.ajax({
                 type: 'POST',
                 url: '/process/',
                 data: {
-                    'number': number,
+                    'hash': encryptedHex,
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },
                 success: function (data) {
-                    $('#response').val(data.hash);
+                    $('#response').val(encryptedHex);
 
                     var newRow = $('<tr></tr>');
-                    var numberCell = $('<td></td>').text(number);
                     var hashCell = $('<td></td>').css({
                         'font-size': 'smaller',
                         'word-wrap': 'break-word',
                         'max-width': '92vw'
-                    }).text(data.hash);
-                    newRow.append(numberCell);
+                    }).text(encryptedHex);
                     newRow.append(hashCell);
 
                     var tableBody = $('#hashTable tbody');
@@ -80,4 +95,6 @@
     </script>
 </body>
 </html>
+
+
 
