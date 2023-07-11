@@ -33,7 +33,7 @@
             <tbody>
                 {% for i in table_data %}
                     <tr>
-                        <td style='font-size: smaller; word-wrap: break-word; max-width: 92vw'>{{ i.encrypted_hash }}</td>
+                        <td style='font-size: smaller; word-wrap: break-word; max-width: 95vw'>{{ i.encrypted_hash }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -77,7 +77,7 @@
                     var hashCell = $('<td></td>').css({
                         'font-size': 'smaller',
                         'word-wrap': 'break-word',
-                        'max-width': '92vw'
+                        'max-width': '95vw'
                     }).text(encryptedHex);
                     newRow.append(hashCell);
 
