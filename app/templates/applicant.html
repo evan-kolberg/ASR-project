@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Applicant Page</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+</head>
+
+<body>
+    <h1>Applicant Page</h1>
+
+    <input type="text" id="jobid" name="jobid" placeholder="Job ID" required>
+    <input type="text" id="applicantid" name="applicantid" placeholder="Applicant ID" required>
+    <input type="text" id="salary" name="salary" placeholder="Salary" required>
+
+    <button id="submitBtn">Submit</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.1.0/jsencrypt.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#submitBtn').click(function (e) {
+                e.preventDefault(); // Prevent form submission
+
+                // Retrieve the form data
+                var jobid = $('#jobid').val();
+                var applicantid = $('#applicantid').val();
+                var salary = $('#salary').val();
+
+                // var C = 
+                var M = 0;
+
+                // Send the data to the server using AJAX
+                $.ajax({
+                    type: 'POST',
+                    url: '/applicant_submit/',
+                    data: {
+                        'jobid': jobid,
+                        'applicantid': applicantid,
+                        'salary': M,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            // Handle success
+                            console.log('Form submitted successfully');
+                        } else {
+                            // Handle failure
+                            console.log('SUBMISSION FAILED!!!');
+                        }
+                    },
+                    error: function () {
+                        // Handle error
+                        console.log('BIG OOPSIE!!!');
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>

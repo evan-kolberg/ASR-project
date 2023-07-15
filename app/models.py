@@ -1,5 +1,22 @@
 from django.db import models
 
-class data(models.Model):
-    encrypted_hash = models.TextField()
-    number = models.DateTimeField(auto_now_add=True)
+
+class employer(models.Model):
+    jobid = models.TextField()
+    employerid = models.TextField()
+    salary = models.TextField()
+
+class applicant(models.Model):
+    jobid = models.TextField()
+    applicantid = models.TextField()
+    salary = models.TextField()
+
+class responses(models.Model):
+    jobid = models.TextField()
+    employerid = models.TextField()
+    applicantid = models.TextField()
+    boolean = models.BooleanField()
+    datetime = models.DateTimeField(auto_now_add=True)
+
+
+

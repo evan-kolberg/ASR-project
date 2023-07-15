@@ -1,25 +1,30 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import data
+from .models import employer, applicant, responses
 from django.utils import timezone
 
 
-# gives html file and most recent 20 items in db
 def handle(request):
-    return render(request, 'index.html', {'table_data': data.objects.order_by('-id')[:20]})
+    return render(request, 'index.html')
+
+def handle_applicant(request):
+    return render(request, 'applicant.html')
+
+def handle_employer(request):
+    return render(request, 'employer.html')
+
 
 
 @csrf_exempt
-def process_hash(request):
+def applicant_submit(request):
     if request.method == 'POST':
-        hash = request.POST.get('hash')
-        number = timezone.now
-
-        # Store the encrypted hash in the database
-        data.objects.create(number=number, encrypted_hash=hash)
+        
 
         return JsonResponse({'success': True})
 
-    return JsonResponse({'success': False})  # Add a response for non-POST requests
+    return JsonResponse({'success': False})
+
+
+
 

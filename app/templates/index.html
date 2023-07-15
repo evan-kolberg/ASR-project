@@ -1,100 +1,24 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang='en'>
+
 <head>
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <meta http-equiv='X-UA-Compatible' content='ie=edge'>
-    <title>Garbled Circuit</title>
+    <title>Yao's Millionaires' problem</title>
     <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}" />
 </head>
+
 <body>
-    <h1>Garbled Circuit</h1>
-    <hr>
-    <br>
-    <div>
-        <label>Enter a number</label>
-        <input type='number' pattern='\d*' step='1' id='moolaa'/>				
-        <input type='button' value='Send' onclick='sendNumber()' />
-    </div>
-    <br>
-    <div>
-        <label>Response</label>
-        <textarea type='text' id='response' style='background-color:white; color:black' rows='5' cols='105' readonly></textarea> 
-    </div>
-    <br>
-    <div>
-        <table id='hashTable' border='0'>
-            <thead>
-                <tr>
-                    <th>Encrypted Hash</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for i in table_data %}
-                    <tr>
-                        <td style='font-size: smaller; word-wrap: break-word; max-width: 95vw'>{{ i.encrypted_hash }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.1.0/jsencrypt.min.js'></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js'></script>
-    <script>
-        function sendNumber() {
-            var number = document.getElementById('moolaa').value;
-            document.getElementById('moolaa').value = '';
 
-            // Create a new JSEncrypt instance
-            var encrypt = new JSEncrypt();
 
-            // Generate a new RSA key pair
-            var rsaKeyPair = encrypt.getKey();
 
-            // Set the public key for encryption
-            var publicKey = rsaKeyPair.getPublicKey();
-            encrypt.setPublicKey(publicKey);
+    <button><a href="{% url 'applicant' %}">Applicant UI</a></button>
+    <button><a href="{% url 'employer' %}">Employer UI</a></button>
+    
 
-            // Encrypt the number using the public key
-            var encrypted = encrypt.encrypt(number);
 
-            // Convert the encrypted value to a hex string for transmission
-            var encryptedHex = CryptoJS.enc.Hex.stringify(CryptoJS.enc.Utf8.parse(encrypted));
-
-            $.ajax({
-                type: 'POST',
-                url: '/process/',
-                data: {
-                    'hash': encryptedHex,
-                    'csrfmiddlewaretoken': '{{ csrf_token }}'
-                },
-                success: function (data) {
-                    $('#response').val(encryptedHex);
-
-                    var newRow = $('<tr></tr>');
-                    var hashCell = $('<td></td>').css({
-                        'font-size': 'smaller',
-                        'word-wrap': 'break-word',
-                        'max-width': '95vw'
-                    }).text(encryptedHex);
-                    newRow.append(hashCell);
-
-                    var tableBody = $('#hashTable tbody');
-                    var rowCount = tableBody.children().length;
-
-                    if (rowCount >= 20) {
-                        tableBody.find('tr:last').remove();
-                    }
-
-                    tableBody.prepend(newRow);
-                }
-            });
-        }
-    </script>
 </body>
+
 </html>
-
-
-
