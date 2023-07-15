@@ -19,10 +19,15 @@ def handle_employer(request):
 @csrf_exempt
 def applicant_submit(request):
     if request.method == 'POST':
+        jobid = request.POST.get('jobid')
+        applicantid = request.POST.get('applicantid')
+        salary = request.POST.get('salary')
+
+        new_applicant = applicant(jobid=jobid, applicantid=applicantid, salary=salary)
+        new_applicant.save()  
         
-
+            
         return JsonResponse({'success': True})
-
     return JsonResponse({'success': False})
 
 
@@ -34,6 +39,5 @@ def employer_submit(request):
         
 
         return JsonResponse({'success': True})
-
     return JsonResponse({'success': False})
 

@@ -38,6 +38,11 @@
                     return; // Stop further execution
                 }
 
+                
+                // Yao's problem here
+
+
+
 
                 // Send the data to the server using AJAX
                 $.ajax({
@@ -51,13 +56,8 @@
                     },
                     success: function (response) {
                         if (response.success) {
-                            console.log('Form submitted successfully');
-                        } else {
-                            console.log('Failure');
+                            console.log('success')
                         }
-                    },
-                    error: function () {
-                        console.log('Client side err');
                     }
                 });
             });
