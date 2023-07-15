@@ -8,17 +8,25 @@
     <meta http-equiv='X-UA-Compatible' content='ie=edge'>
     <title>Yao's Millionaires' problem</title>
     <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}" />
+    
 </head>
 
 <body>
+    <button id="applicant_redirect">Applicant UI</button>
+    <button id="employer_redirect">Employer UI</button>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#applicant_redirect').click(function () {
+                window.location.href = "{% url 'applicant' %}";
+            });
 
-
-    <button><a href="{% url 'applicant' %}">Applicant UI</a></button>
-    <button><a href="{% url 'employer' %}">Employer UI</a></button>
-    
-
-
+            $('#employer_redirect').click(function () {
+                window.location.href = "{% url 'employer' %}";
+            });
+        });
+    </script>
 </body>
 
 </html>

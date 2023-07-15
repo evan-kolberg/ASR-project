@@ -28,3 +28,12 @@ def applicant_submit(request):
 
 
 
+@csrf_exempt
+def employer_submit(request):
+    if request.method == 'POST':
+        
+
+        return JsonResponse({'success': True})
+
+    return JsonResponse({'success': False})
+

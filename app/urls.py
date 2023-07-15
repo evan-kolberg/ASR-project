@@ -8,6 +8,7 @@ urlpatterns = [
     path('employer/', views.handle_employer, name='employer'),
 
     path('applicant_submit/', views.applicant_submit),
+    path('employer_submit/', views.employer_submit),
 
     path('favicon.ico', serve, {'path': 'img/favicon.ico'}),
 ]

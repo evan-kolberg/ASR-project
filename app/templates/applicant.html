@@ -13,11 +13,10 @@
 <body>
     <h1>Applicant Page</h1>
 
-    <input type="text" id="jobid" name="jobid" placeholder="Job ID" required>
-    <input type="text" id="applicantid" name="applicantid" placeholder="Applicant ID" required>
-    <input type="text" id="salary" name="salary" placeholder="Salary" required>
-
-    <button id="submitBtn">Submit</button>
+    <input type="text" id="jobid" placeholder="Job ID" required>
+    <input type="text" id="applicantid" placeholder="Applicant ID" required>
+    <input type="number" pattern="\d*" step=".01" id="salary" placeholder="Salary" required>
+    <button id="submit">Submit</button>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.1.0/jsencrypt.min.js"></script>
@@ -25,16 +24,20 @@
 
     <script>
         $(document).ready(function () {
-            $('#submitBtn').click(function (e) {
-                e.preventDefault(); // Prevent form submission
+            $('#submit').click(function (e) {
+                e.preventDefault(); // Prevents page refresh
 
                 // Retrieve the form data
                 var jobid = $('#jobid').val();
                 var applicantid = $('#applicantid').val();
                 var salary = $('#salary').val();
 
-                // var C = 
-                var M = 0;
+                // Perform validation
+                if (jobid === '' || applicantid === '' || salary === '') {
+                    console.log('Please fill in all the fields');
+                    return; // Stop further execution
+                }
+
 
                 // Send the data to the server using AJAX
                 $.ajax({
@@ -43,21 +46,18 @@
                     data: {
                         'jobid': jobid,
                         'applicantid': applicantid,
-                        'salary': M,
+                        'salary': 0, // needs to be the M variable
                         'csrfmiddlewaretoken': '{{ csrf_token }}',
                     },
                     success: function (response) {
                         if (response.success) {
-                            // Handle success
                             console.log('Form submitted successfully');
                         } else {
-                            // Handle failure
-                            console.log('SUBMISSION FAILED!!!');
+                            console.log('Failure');
                         }
                     },
                     error: function () {
-                        // Handle error
-                        console.log('BIG OOPSIE!!!');
+                        console.log('Client side err');
                     }
                 });
             });
