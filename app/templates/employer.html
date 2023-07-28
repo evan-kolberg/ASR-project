@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Employer Page</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+</head>
+
+<body>
+    <h1>Employer Page</h1>
+
+    <input type="text" id="jobid" placeholder="Job ID" required>
+    <input type="text" id="employerid" placeholder="Employer ID" required>
+    <input type="number" pattern="\d*" step=".01" id="expected_salary" placeholder="Expected Salary" required>
+    <button id="submit">Submit</button>
+
+    <br><br>
+    <div id="success_message" style="display: none;">Submitted successfully!</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.1.0/jsencrypt.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#submit').click(function (e) {
+                e.preventDefault(); // Prevents page refresh
+
+                // Retrieve the form data
+                var jobid = $('#jobid').val();
+                var employerid = $('#employerid').val();
+                var expected_salary = $('#expected_salary').val();
+
+                // Perform validation
+                if (jobid === '' || employerid === '' || expected_salary === '') {
+                    console.log('Please fill in all the fields');
+                    return; // Stop further execution
+                }
+
+                // Step 1: Generate RSA encryption keys (Client-side)
+                var encrypt = new JSEncrypt();
+                var publicKey = encrypt.getPublicKey(); // Get the public key as a string
+
+                // Step 2: Encrypt the expected salary (Client-side)
+                encrypt.setPublicKey(publicKey); // Set the public key for encryption
+                var salary = encrypt.encrypt(expected_salary);
+
+                // Step 3: Send the encrypted data and public key to the server using AJAX
+                $.ajax({
+                    type: 'POST',
+                    url: '/submit/',
+                    data: {
+                        'jobid': jobid,
+                        'userid': employerid,
+                        'cipher_salary': salary,
+                        'public_key': publicKey, // Include the public key in the data
+                        'who': 'employer',
+                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            console.log('success');
+
+                            // Clear the form fields after success
+                            $('#jobid').val('');
+                            $('#employerid').val('');
+                            $('#expected_salary').val('');
+
+                            // Show a success message
+                            $('#success_message').text('Submitted successfully!').fadeIn().delay(1000).fadeOut();
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>
