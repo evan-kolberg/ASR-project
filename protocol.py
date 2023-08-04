@@ -1,7 +1,7 @@
 from random import randint
 import csv
-import timeit
-
+import time
+import subprocess
 
 def rsa_encrypt(plaintext, e, n):
     return pow(plaintext, e, n)
@@ -42,90 +42,22 @@ def bob_step2(p, W):
     x = W[I - 1]
     return x % p
 
-
-
-
-
-
-
-
-
 def run_protocol(e, n, d):
     I = randint(0, 9)
     J = randint(0, 9)
 
+    start_time = time.perf_counter()
+
     m = bob_step1(J, e, n)
-
-    start_time = timeit.default_timer()
     p, W = alice(m, d, n)
-    alice_time = timeit.default_timer() - start_time
-
-    start_time = timeit.default_timer()
     x = bob_step2(p, W)
-    bob_time = timeit.default_timer() - start_time
-
     output = x == W[I - 1]
+
+    end_time = time.perf_counter() - start_time
+
     correct = output == (I > J)
 
-    return I, J, output, correct, alice_time + bob_time
-
-
-
-
-
-def format_duration(seconds):
-    # Calculate seconds, milliseconds, microseconds, and nanoseconds
-    seconds, milliseconds = divmod(seconds, 1)
-    milliseconds, microseconds = divmod(milliseconds * 1000, 1)
-    microseconds, nanoseconds = divmod(microseconds * 1000, 1)
-
-    # Build the formatted string
-    duration_string = ""
-    if seconds:
-        duration_string += f"{int(seconds)} seconds "
-    if milliseconds:
-        duration_string += f"{int(milliseconds)} milliseconds "
-    if microseconds:
-        duration_string += f"{int(microseconds)} microseconds "
-    if nanoseconds:
-        duration_string += f"{int(nanoseconds * 1000)} nanoseconds"
-
-    return duration_string.strip()
-
-
-
-
-
-
-
-
-
-def analyze_results(csv_file):
-    total_compute_time = 0
-    num_correct = 0
-    num_total = 0
-
-    with open(csv_file, mode="r") as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            total_compute_time += float(row["Total Compute Time"])
-            num_total += 1
-            if row["Correct"] == "True":
-                num_correct += 1
-
-    if num_total > 0:
-        average_compute_time = total_compute_time / num_total
-        accuracy_percentage = (num_correct / num_total) * 100
-    else:
-        average_compute_time = 0
-        accuracy_percentage = 0
-
-    return average_compute_time, accuracy_percentage
-
-
-
-
-
+    return I, J, output, correct, end_time
 
 
 
@@ -134,18 +66,14 @@ e = 3
 n = 77
 d = 27
 
-rand = randint(0, 9999999999)
-
 # Number of iterations for testing
 num_iterations = 1000000
 
-# CSV file to record results
-csv_file = f"protocol_results{str(rand)}.csv"
-output_file = f"analysis_results{str(rand)}.txt"
 
 
-
-
+# File to record results
+rand = randint(0, 9999999999)
+csv_file = f"protocol_results~{str(rand)}.csv"
 
 if __name__ == '__main__':
     with open(csv_file, mode="w", newline="") as file:
@@ -156,24 +84,11 @@ if __name__ == '__main__':
             result = run_protocol(e, n, d)
             writer.writerow(result)
 
-    print(f"\n\n\tAnanlysis results recorded in '{rand}'\n\n")
-    average_compute_time, accuracy_percentage = analyze_results(csv_file)
-
-    # Save the printed output to a file
-    with open(output_file, mode="w") as output_file:
-        output_file.write(f"Protocol results recorded in '{csv_file}'\n")
-        output_file.write(f"Average Compute Time (per iteration): {format_duration(average_compute_time)} | {average_compute_time} seconds\n")
-        output_file.write(f"Accuracy Percentage: {accuracy_percentage}%\n\n")
+    print(f"\n\tProtocol results recorded in 'protocol_results~{rand}.csv'\n")
 
 
 
-
-
-
-
-
-
-
+    subprocess.run(["python", "analyze.py", str(rand)])
 
 
 
