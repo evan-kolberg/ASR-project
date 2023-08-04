@@ -43,6 +43,13 @@ def bob_step2(p, W):
     return x % p
 
 
+
+
+
+
+
+
+
 def run_protocol(e, n, d):
     I = randint(0, 9)
     J = randint(0, 9)
@@ -63,6 +70,36 @@ def run_protocol(e, n, d):
     return I, J, output, correct, alice_time + bob_time
 
 
+
+
+
+def format_duration(seconds):
+    # Calculate seconds, milliseconds, microseconds, and nanoseconds
+    seconds, milliseconds = divmod(seconds, 1)
+    milliseconds, microseconds = divmod(milliseconds * 1000, 1)
+    microseconds, nanoseconds = divmod(microseconds * 1000, 1)
+
+    # Build the formatted string
+    duration_string = ""
+    if seconds:
+        duration_string += f"{int(seconds)} seconds "
+    if milliseconds:
+        duration_string += f"{int(milliseconds)} milliseconds "
+    if microseconds:
+        duration_string += f"{int(microseconds)} microseconds "
+    if nanoseconds:
+        duration_string += f"{int(nanoseconds * 1000)} nanoseconds"
+
+    return duration_string.strip()
+
+
+
+
+
+
+
+
+
 def analyze_results(csv_file):
     total_compute_time = 0
     num_correct = 0
@@ -77,7 +114,7 @@ def analyze_results(csv_file):
                 num_correct += 1
 
     if num_total > 0:
-        average_compute_time = (total_compute_time / num_total) * 1000000
+        average_compute_time = total_compute_time / num_total
         accuracy_percentage = (num_correct / num_total) * 100
     else:
         average_compute_time = 0
@@ -86,12 +123,18 @@ def analyze_results(csv_file):
     return average_compute_time, accuracy_percentage
 
 
+
+
+
+
+
+
 # Faux inputs
 e = 3
 n = 77
 d = 27
 
-rand = randint(1, 9999999999)
+rand = randint(0, 9999999999)
 
 # Number of iterations for testing
 num_iterations = 1000000
@@ -99,6 +142,9 @@ num_iterations = 1000000
 # CSV file to record results
 csv_file = f"protocol_results{str(rand)}.csv"
 output_file = f"analysis_results{str(rand)}.txt"
+
+
+
 
 
 if __name__ == '__main__':
@@ -110,17 +156,27 @@ if __name__ == '__main__':
             result = run_protocol(e, n, d)
             writer.writerow(result)
 
-    print(f"\n\n\tProtocol results recorded in '{csv_file}'")
+    print(f"\n\n\tAnanlysis results recorded in '{rand}'\n\n")
     average_compute_time, accuracy_percentage = analyze_results(csv_file)
 
     # Save the printed output to a file
     with open(output_file, mode="w") as output_file:
         output_file.write(f"Protocol results recorded in '{csv_file}'\n")
-        output_file.write(f"Average Compute Time (per iteration): {average_compute_time} microseconds\n")
+        output_file.write(f"Average Compute Time (per iteration): {format_duration(average_compute_time)} | {average_compute_time} seconds\n")
         output_file.write(f"Accuracy Percentage: {accuracy_percentage}%\n\n")
 
-    print(f"\tAverage Compute Time (per iteration): {average_compute_time} microseconds")
-    print(f"\tAccuracy Percentage: {accuracy_percentage}%\n\n")
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
