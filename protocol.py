@@ -2,6 +2,7 @@ from random import randint
 import csv
 import time
 import subprocess
+import sys
 
 def rsa_encrypt(plaintext, e, n):
     return pow(plaintext, e, n)
@@ -84,11 +85,11 @@ if __name__ == '__main__':
             result = run_protocol(e, n, d)
             writer.writerow(result)
 
-    print(f"\n\tProtocol results recorded in 'protocol_results~{rand}.csv'\n")
+    print(f"\n\tProtocol results recorded in 'protocol_results~{rand}.csv'")
 
 
 
-    subprocess.run(["python", "analyze.py", str(rand)])
+    subprocess.run([sys.executable, "analyze.py", str(rand)])
 
 
 
