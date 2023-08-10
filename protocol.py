@@ -4,6 +4,8 @@ import time
 import subprocess
 import sys
 
+x = 0
+
 def rsa_encrypt(plaintext, e, n):
     return pow(plaintext, e, n)
 
@@ -25,28 +27,37 @@ def is_prime(num):
     return True
 
 def bob_step1(j, e, n):
+    global x
     x = randint(1, n)
+    print(f"x:{x}")
     c = rsa_encrypt(x, e, n)
+    print(f"C:{c}")
     m = (c - j + 1) % n
+    print(f"M:{m}")
     return m
 
 def alice(m, d, n):
-    Y = [rsa_decrypt((m + i - 1) % n, d, n) for i in range(1, 11)]
+    Y = [rsa_decrypt((m + i - 1) % n, d, n) for i in range(1, Y_vals)]
     p = find_random_prime(n // 2)
+    print(f"p:{p}")
     Z = [y % p for y in Y]
     I = 5
     W = [(z + 1) % p if i > I else z for i, z in enumerate(Z, start=1)]
+    print(f"W:{W}")
     return p, W
 
 def bob_step2(p, W):
-    I = 5
-    x = W[I - 1]
+    #I = 5
+    #x = W[I - 1]
+    print(f"x:{x}")
     return x % p
 
 def run_protocol(e, n, d):
-    I = randint(0, 9)
-    J = randint(0, 9)
+    #I = randint(0, 9)
+    #J = randint(0, 9)
 
+    I = 5
+    J = 7
     start_time = time.perf_counter()
 
     m = bob_step1(J, e, n)
@@ -62,14 +73,16 @@ def run_protocol(e, n, d):
 
 
 
-# Faux inputs
-e = 3
-n = 77
-d = 27
+# inputs
+e = 17
+n = 3233
+d = 413
+
+Y_vals = 11
+
 
 # Number of iterations for testing
-num_iterations = 1000000
-
+num_iterations = 500000
 
 
 # File to record results
