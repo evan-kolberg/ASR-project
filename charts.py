@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
     make_chart(uid, float(average_compute_time), float(accuracy_percentage))
 
-    print(f"\n\tGraph generated in 'accuracy_vs_performance_{uid}.html'\n")
+    print(f"\tGraph generated in 'accuracy_vs_performance_{uid}.html'\n")
 
 
 

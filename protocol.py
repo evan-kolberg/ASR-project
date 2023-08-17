@@ -3,20 +3,12 @@ import csv
 import time
 import subprocess
 import sys
+import multiprocessing
 
-x = 0
 
-def rsa_encrypt(plaintext, e, n):
-    return pow(plaintext, e, n)
-
-def rsa_decrypt(ciphertext, d, n):
-    return pow(ciphertext, d, n)
-
-def find_random_prime(limit):
-    while True:
-        candidate = randint(1, limit)
-        if is_prime(candidate):
-            return candidate
+def rsa_encrypt_decrypt(M, key):
+    c = pow(M, key[0]) % key[1]
+    return c
 
 def is_prime(num):
     if num <= 1:
@@ -26,87 +18,120 @@ def is_prime(num):
             return False
     return True
 
-def bob_step1(j, e, n):
-    global x
-    x = randint(1, n)
-    print(f"x:{x}")
-    c = rsa_encrypt(x, e, n)
-    print(f"C:{c}")
-    m = (c - j + 1) % n
-    print(f"M:{m}")
-    return m
 
-def alice(m, d, n):
-    Y = [rsa_decrypt((m + i - 1) % n, d, n) for i in range(1, Y_vals)]
-    p = find_random_prime(n // 2)
-    print(f"p:{p}")
-    Z = [y % p for y in Y]
-    I = 5
-    W = [(z + 1) % p if i > I else z for i, z in enumerate(Z, start=1)]
-    print(f"W:{W}")
-    return p, W
 
-def bob_step2(p, W):
-    #I = 5
-    #x = W[I - 1]
-    print(f"x:{x}")
-    return x % p
+def run_protocol(I, J, r1, r2, e, n, d):
 
-def run_protocol(e, n, d):
-    #I = randint(0, 9)
-    #J = randint(0, 9)
+    start = time.perf_counter()
 
-    I = 5
-    J = 7
-    start_time = time.perf_counter()
+    bobPubKey = [e, n]
+    bobPrivKey = [d, n]
 
-    m = bob_step1(J, e, n)
-    p, W = alice(m, d, n)
-    x = bob_step2(p, W)
-    output = x == W[I - 1]
+    N = n.bit_length()
+    X = randint(0, n)
 
-    end_time = time.perf_counter() - start_time
+    c = rsa_encrypt_decrypt(X, bobPubKey)
+    c = c - I
+
+    scope = r2 + r1
+    n = [0] * (scope + 1)
+
+    for i in range(1, len(n)):
+        n[i] = rsa_encrypt_decrypt(c + i, bobPrivKey)
+
+    m = n[1:]
+
+    N = max(m).bit_length()
+    prime_list = [i for i in range(2, 2 ** (N - 1)) if is_prime(i)]
+
+    Z = [0] * (scope)
+    prime = prime_list.pop()
+
+    for i in range(0, len(m)):
+        Z[i] = m[i] % prime
+
+    bool = False
+
+    while not bool:
+        prime_found = True
+        for i in range(len(m)):
+            for j in range(i + 1, len(m)):
+                if abs(Z[i] - Z[j]) < 2 or not (0 < Z[i] < prime - 1):
+                    prime_found = False
+                    break
+            if not prime_found:
+                break
+        
+        if prime_found:
+            bool = True
+        elif prime_list:
+            prime = prime_list.pop()
+            Z = [val % prime for val in m]
+        else:
+            break
+
+
+    for i in range(J, len(Z)):
+        Z[i] = (Z[i] + 1) % prime
+
+    
+    if X % prime == Z[I - 1]:
+        output = False 
+    else:
+        output = True
 
     correct = output == (I > J)
+    compute_time = time.perf_counter() - start
 
-    return I, J, output, correct, end_time
-
-
-
-# inputs
-e = 17
-n = 3233
-d = 413
-
-Y_vals = 11
+    return I, J, output, correct, compute_time
 
 
-# Number of iterations for testing
-num_iterations = 500000
-
-
-# File to record results
-rand = randint(0, 9999999999)
-csv_file = f"protocol_results~{str(rand)}.csv"
+def process_iteration(args):
+    I, J, r1, r2, e, n, d = args
+    result = run_protocol(I, J, r1, r2, e, n, d)
+    return result
 
 if __name__ == '__main__':
+    start = time.perf_counter()
+
+    e = 17
+    n = 3233
+    d = 413
+
+    num_iterations = 20
+
+    rand = randint(0, 999999)
+    csv_file = f"protocol_results~{str(rand)}.csv"
+
+    pool = multiprocessing.Pool()
+
     with open(csv_file, mode="w", newline="") as file:
         writer = csv.writer(file)
-        writer.writerow(["I", "J", "Output", "Correct", "Total Compute Time"])
+        writer.writerow(["I", "J", "Output", "Correct", "Compute Time"])
+        
+        iteration_args = []
 
-        for _ in range(num_iterations):
-            result = run_protocol(e, n, d)
+        for i in range(num_iterations):
+            I = randint(1, 100000)
+            J = randint(1, 100000)
+
+            r1 = min(I, J)
+            r2 = max(I, J)
+
+            iteration_args.append((I, J, r1, r2, e, n, d))
+
+        results = pool.map(process_iteration, iteration_args)
+
+        for result in results:
             writer.writerow(result)
 
-    print(f"\n\tProtocol results recorded in 'protocol_results~{rand}.csv'")
+    pool.close()
+    pool.join()
 
+    time_elapsed = time.perf_counter()-start
 
-
-    subprocess.run([sys.executable, "analyze.py", str(rand)])
-
-
-
-
+    print(f"\tProtocol results recorded in 'protocol_results~{rand}.csv'")
+    subprocess.run([sys.executable, "analyze.py", str(rand), str(time_elapsed)])
 
 
 

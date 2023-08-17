@@ -12,7 +12,7 @@ def analyze_results(csv_file):
     with open(csv_file, mode="r") as file:
         reader = csv.DictReader(file)
         for row in reader:
-            total_compute_time += float(row["Total Compute Time"])
+            total_compute_time += float(row["Compute Time"])
             num_total += 1
             if row["Correct"] == "True":
                 num_correct += 1
@@ -34,6 +34,8 @@ if __name__ == '__main__':
         sys.exit(1)
 
     uid = sys.argv[1]
+    time_elapsed = sys.argv[2]
+
     csv_file = f"protocol_results~{uid}.csv"
     output_file = f"analysis_results~{uid}.txt"
 
@@ -41,10 +43,11 @@ if __name__ == '__main__':
 
     with open(output_file, mode="w") as file:
         file.write(f"Average Compute Time (per iteration): {round(average_compute_time * 1e9, -2)/1000} microseconds (100 ns precision) | {average_compute_time} seconds\n")
+        file.write(f"Total Time Elapsed: {time_elapsed} seconds\n")
         file.write(f"Accuracy Percentage: {accuracy_percentage}%")
 
 
-    print(f"\n\tAnalysis results recorded in '{output_file}'")
+    print(f"\tAnalysis results recorded in '{output_file}'")
 
 
     #subprocess.run([sys.executable, "charts.py", uid, str(average_compute_time), str(accuracy_percentage)])
