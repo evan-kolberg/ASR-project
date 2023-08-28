@@ -4,7 +4,9 @@ import numpy as np
 from cryptography.hazmat.primitives.asymmetric import rsa
 
 # Lists to store computed values for analysis and plotting
-key_sizes = [2**i for i in range(9, 14)]  # Exponential growth of key sizes
+key_sizes = [768, 1280, 1792, 2304, 2816, 3328, 3840,
+             4352, 4864, 5376, 5888, 6400, 6912, 7424, 7936,
+             8448, 8960, 9472, 9984, 10496]
 key_strengths = []
 
 def calculate_key_strength(public_key):
@@ -20,12 +22,13 @@ def generate_key_pair(key_size):
 
 def analyze_key_strengths(key_sizes):
     for key_size in key_sizes:
+        print(key_size)
         public_key = generate_key_pair(key_size)
         strength = calculate_key_strength(public_key)
         key_strengths.append(strength)
 
 def plot_key_strengths(key_sizes, key_strengths):
-    plt.scatter(key_sizes, key_strengths, c='darkblue', marker='o')
+    plt.scatter(key_sizes, key_strengths, c='blue', marker='o')
     plt.xlabel('Key Size (bits)')
     plt.ylabel('Key Strength (bits)')
     plt.title('Key Strength vs Key Size')

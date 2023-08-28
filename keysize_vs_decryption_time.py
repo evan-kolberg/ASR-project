@@ -2,6 +2,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.asymmetric.padding import PKCS1v15
 import matplotlib.pyplot as plt
 import time
+import numpy as np
 
 # Generate RSA key pair
 def generate_key_pair(key_size):
@@ -24,10 +25,13 @@ def measure_decryption_time(private_key, ciphertext):
     return decryption_time
 
 def main():
-    key_sizes = [2**i for i in range(9, 15)]
+    key_sizes = [768, 1280, 1792, 2304, 2816, 3328, 3840,
+             4352, 4864, 5376, 5888, 6400, 6912, 7424, 7936,
+             8448, 8960, 9472, 9984, 10496]
     decryption_times = []
 
     for key_size in key_sizes:
+        print(key_size)
         private_key, public_key = generate_key_pair(key_size)
 
         # Encrypt a sample message
@@ -41,13 +45,23 @@ def main():
         decryption_time = measure_decryption_time(private_key, ciphertext)
         decryption_times.append(decryption_time)
 
+    # Exponential fit
+    p = np.polyfit(key_sizes, np.log(decryption_times), 1)
+    exponential_fit = np.exp(np.polyval(p, key_sizes))
+
     # Plotting
-    plt.plot(key_sizes, decryption_times, marker='o', linestyle='-', color='blue')
+    plt.scatter(key_sizes, decryption_times, c='blue', marker='o', label='Data Points')
+    plt.plot(key_sizes, exponential_fit, linestyle='--', color='red', label='Exponential Fit')
     plt.xlabel('Key Size (bits)')
     plt.ylabel('Decryption Time (seconds)')
     plt.title('RSA Key Size vs Decryption Time')
+    plt.legend()
+    plt.legend(loc='upper left')
     plt.grid(True)
     plt.show()
 
 if __name__ == "__main__":
     main()
+
+
+

@@ -9,7 +9,7 @@ import numpy as np
 
 # Lists to store computed values for analysis and plotting
 average_compute_times = []
-accuracy_percentages = []
+average_scope_values = []
 
 def rsa_encrypt_decrypt(M, key):
     c = pow(M, key[0]) % key[1]
@@ -79,7 +79,7 @@ def run_protocol(I, J, r1, r2, e, n, d):
     correct = output == (I > J)
     compute_time = time.perf_counter() - start
 
-    return I, J, output, correct, compute_time
+    return I, J, output, correct, compute_time, scope
 
 def process_iteration(args):
     I, J, r1, r2, e, n, d = args
@@ -88,6 +88,7 @@ def process_iteration(args):
 
 def analyze_results(csv_file):
     total_compute_time = 0
+    total_scope = 0
     num_correct = 0
     num_total = 0
 
@@ -95,44 +96,44 @@ def analyze_results(csv_file):
         reader = csv.DictReader(file)
         for row in reader:
             total_compute_time += float(row["Compute Time"])
+            total_scope += int(row["Scope"])
             num_total += 1
             if row["Correct"] == "True":
                 num_correct += 1
 
     if num_total > 0:
         average_compute_time = total_compute_time / num_total
+        average_scope = total_scope / num_total
         accuracy_percentage = (num_correct / num_total) * 100
     else:
         average_compute_time = 0
+        average_scope = 0
         accuracy_percentage = 0
 
     average_compute_times.append(average_compute_time)
-    accuracy_percentages.append(accuracy_percentage)
+    average_scope_values.append(average_scope)
 
-def plot(average_compute_times, accuracy_percentages):
-    plt.scatter(average_compute_times, accuracy_percentages, c='blue', marker='o')
-    plt.xlabel('Average Compute Time (seconds)')
-    plt.ylabel('Average Accuracy (%)')
-    plt.title('Average Compute Time vs Average Accuracy')
-    plt.ylim(0, 110)
-    plt.xlim(0, max(average_compute_times) + 1)
+def plot(average_scope_values, average_compute_times):  # Switched the arguments
+    plt.scatter(average_scope_values, average_compute_times, c='blue', marker='o')  # Switched arguments here
+    plt.xlabel('Average Scope (I & J range)')
+    plt.ylabel('Average Compute Time (seconds)')  # Switched the labels
+    plt.title('Average Scope vs Average Compute Time')
+    plt.xlim(0, 200000)
+    plt.ylim(0, max(average_compute_times) + 1)  # Adjusted the limits
     plt.grid(True)
 
     # Calculate the line of best fit
-    fit = np.polyfit(average_compute_times, accuracy_percentages, 1)
+    fit = np.polyfit(average_scope_values, average_compute_times, 1)
     fit_fn = np.poly1d(fit)
 
     # Generate x values for the line of best fit
-    x_values = np.linspace(min(average_compute_times), max(accuracy_percentages), 100)
+    x_values = np.linspace(min(average_scope_values), max(average_scope_values), 100)
 
     # Plot the line of best fit
     plt.plot(x_values, fit_fn(x_values), 'r--', label='Line of Best Fit')
 
-    # Place the legend in the bottom left corner
-    plt.legend(loc='lower left')
-    
+    plt.legend()
     plt.show()
-
 
 if __name__ == '__main__':
     num_repeats = 100
@@ -151,7 +152,7 @@ if __name__ == '__main__':
 
         with open(csv_file, mode="w", newline="") as file:
             writer = csv.writer(file)
-            writer.writerow(["I", "J", "Output", "Correct", "Compute Time"])
+            writer.writerow(["I", "J", "Output", "Correct", "Compute Time", "Scope"])
             
             iteration_args = []
 
@@ -174,4 +175,8 @@ if __name__ == '__main__':
 
         analyze_results(csv_file)
 
-    plot(average_compute_times, accuracy_percentages)
+    plot(average_scope_values, average_compute_times)
+
+
+
+
