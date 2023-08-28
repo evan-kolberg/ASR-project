@@ -50,8 +50,6 @@ if __name__ == '__main__':
     print(f"\tAnalysis results recorded in '{output_file}'")
 
 
-    #subprocess.run([sys.executable, "charts.py", uid, str(average_compute_time), str(accuracy_percentage)])
-
 
 
 
