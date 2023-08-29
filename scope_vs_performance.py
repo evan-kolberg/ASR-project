@@ -104,11 +104,9 @@ def analyze_results(csv_file):
     if num_total > 0:
         average_compute_time = total_compute_time / num_total
         average_scope = total_scope / num_total
-        accuracy_percentage = (num_correct / num_total) * 100
     else:
         average_compute_time = 0
         average_scope = 0
-        accuracy_percentage = 0
 
     average_compute_times.append(average_compute_time)
     average_scope_values.append(average_scope)
@@ -118,8 +116,8 @@ def plot(average_scope_values, average_compute_times):  # Switched the arguments
     plt.xlabel('Average Scope (I & J range)')
     plt.ylabel('Average Compute Time (seconds)')  # Switched the labels
     plt.title('Average Scope vs Average Compute Time')
-    plt.xlim(0, 200000)
-    plt.ylim(0, max(average_compute_times) + 1)  # Adjusted the limits
+    plt.xlim(0, 1000000)
+    plt.ylim(0, max(average_compute_times)+.1*max(average_compute_times))  # Adjusted the limits
     plt.grid(True)
 
     # Calculate the line of best fit
@@ -131,12 +129,11 @@ def plot(average_scope_values, average_compute_times):  # Switched the arguments
 
     # Plot the line of best fit
     plt.plot(x_values, fit_fn(x_values), 'r--', label='Line of Best Fit')
-
-    plt.legend()
+    plt.legend(loc='upper left')
     plt.show()
 
 if __name__ == '__main__':
-    num_repeats = 100
+    num_repeats = 1000
 
     for _ in range(num_repeats):
         e = 17
@@ -157,8 +154,8 @@ if __name__ == '__main__':
             iteration_args = []
 
             for _ in range(num_iterations):
-                I = randint(1, 100000)
-                J = randint(1, 100000)
+                I = randint(1, 500000)
+                J = randint(1, 500000)
 
                 r1 = min(I, J)
                 r2 = max(I, J)

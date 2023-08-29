@@ -26,8 +26,8 @@ def measure_decryption_time(private_key, ciphertext):
 
 def main():
     key_sizes = [768, 1280, 1792, 2304, 2816, 3328, 3840,
-             4352, 4864, 5376, 5888, 6400, 6912, 7424, 7936,
-             8448, 8960, 9472, 9984, 10496]
+                 4352, 4864, 5376, 5888, 6400, 6912, 7424, 7936,
+                 8448, 8960, 9472, 9984, 10496]
     decryption_times = []
 
     for key_size in key_sizes:
@@ -45,16 +45,19 @@ def main():
         decryption_time = measure_decryption_time(private_key, ciphertext)
         decryption_times.append(decryption_time)
 
-    # Exponential fit
-    p = np.polyfit(key_sizes, np.log(decryption_times), 1)
-    exponential_fit = np.exp(np.polyval(p, key_sizes))
+    # Exponential fit through origin (0,0)
+    poly_degree = 4  # You can adjust the degree of the polynomial fit
+    poly_coefficients = np.polyfit(key_sizes, decryption_times, poly_degree)
+    polynomial_fit = np.polyval(poly_coefficients, key_sizes)
 
     # Plotting
-    plt.scatter(key_sizes, decryption_times, c='blue', marker='o', label='Data Points')
-    plt.plot(key_sizes, exponential_fit, linestyle='--', color='red', label='Exponential Fit')
+    plt.scatter(key_sizes, decryption_times, c='blue', marker='o')
+    plt.plot(key_sizes, polynomial_fit, linestyle='--', color='red', label=f'Polynomial Fit (Degree {poly_degree})')
     plt.xlabel('Key Size (bits)')
     plt.ylabel('Decryption Time (seconds)')
     plt.title('RSA Key Size vs Decryption Time')
+    plt.xlim(0, max(key_sizes) + 0.1 * max(key_sizes))  # Set x-axis range starting from 0
+    plt.ylim(0, max(decryption_times) + 0.1 * max(decryption_times))  # Set y-axis range
     plt.legend()
     plt.legend(loc='upper left')
     plt.grid(True)
@@ -62,6 +65,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 

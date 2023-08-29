@@ -31,7 +31,7 @@ def plot_key_strengths(key_sizes, key_strengths):
     plt.scatter(key_sizes, key_strengths, c='blue', marker='o')
     plt.xlabel('Key Size (bits)')
     plt.ylabel('Key Strength (bits)')
-    plt.title('Key Strength vs Key Size')
+    plt.title('RSA Key Strength vs Key Size')
     plt.ylim(0, max(key_strengths) + 1000)
     plt.xlim(0, max(key_sizes) + 1000)
     plt.grid(True)
